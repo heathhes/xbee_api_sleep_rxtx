@@ -39,7 +39,7 @@ uint8_t tx_array[] = {0x7E,0x00,0x13,0x10,0x01,
 uint8_t rx_array[21];                    
 int rx_count = 0;
 const int led_pin = 13;  
-const int wake_pin = 2;
+const int wake_pin = 3;
 const int relay_pin = 9;
 
 uint8_t payload[] = {0x99,0x99,0x99,0x99,0x99};
@@ -62,7 +62,7 @@ void setup()
    
   softSerial.begin(9600);
   Serial.begin(9600);
-  Serial.println("xbee_interrupt_sleep_txrx");
+  softSerial.println("xbee_interrupt_sleep_txrx");
   pinMode(wake_pin, INPUT);
   pinMode(led_pin, OUTPUT);
   pinMode(relay_pin,OUTPUT); digitalWrite(relay_pin,LOW); 
@@ -75,11 +75,11 @@ void setup()
   
 void loop() 
 { 
-  attachInterrupt(0, wakeUp, RISING);
+  attachInterrupt(1, wakeUp, RISING);
   LowPower.powerDown(SLEEP_FOREVER, ADC_OFF, BOD_OFF);
   
   // Disable external pin interrupt on wake up pin.
-  detachInterrupt(0);  
+  detachInterrupt(1);  
   delay(250);     //delay after wakeup
   mainFunction(); 
 } 
@@ -114,7 +114,7 @@ void mainFunction()
   //-----transmit meta-data and payload-----
   for(int i = 0; i < 24; i++)
   {
-    softSerial.write(tx_array[i]);
+    Serial.write(tx_array[i]);
   }
   digitalWrite(led_pin, LOW);
   //delay(1000);
@@ -126,13 +126,13 @@ void mainFunction()
 
 void getRxData()
 {
-  while(softSerial.available())
+  while(Serial.available())
   {
-    if(softSerial.read() == 0x7E)
+    if(Serial.read() == 0x7E)
     {
       rx_array[0] = 0x7E;
       for(int i = 1; i < 21; i++)
-        rx_array[i] = softSerial.read();
+        rx_array[i] = Serial.read();
     }
   }
 
@@ -141,10 +141,10 @@ void getRxData()
   {
     for(int i = 0; i < 21; i++)
     {
-      Serial.print(rx_array[i],HEX);
-      Serial.print(", ");
+      softSerial.print(rx_array[i],HEX);
+      softSerial.print(", ");
     } 
-    Serial.println(); 
+    softSerial.println(); 
   }
 
   //Serial.flush();
@@ -243,4 +243,3 @@ uint8_t getDallasTemp()
   
   return temp2dac;
 }
-

@@ -45,8 +45,8 @@ uint8_t tx_array[] = {0x7E,0x00,0x13,0x10,0x01,
 const int tx_array_size = 23;
                     
 uint8_t rx_array[21];
-const int led_pin = 9;  
-const int wake_pin = 2;
+const int led_pin = 13;  
+const int wake_pin = 3;
 const int msg_size = 21;
 
 SimpleTimer sendTimer;
@@ -154,7 +154,7 @@ void sendTxData()
 
   //-----transmit meta-data and payload-----
   for(int i = 0; i < 24; i++)
-    softSerial.write(tx_array[i]);
+    Serial.write(tx_array[i]);
   
 }
 
@@ -165,10 +165,10 @@ void printTxData()
 {
   for(int i = 0; i < 23; i++)
   {
-    Serial.print(tx_array[i],HEX);
-    Serial.print(", ");
+    softSerial.print(tx_array[i],HEX);
+    softSerial.print(", ");
   }
-  Serial.println();
+  softSerial.println();
 }
 
 ////////////////////////////////////////
@@ -177,20 +177,20 @@ void printTxData()
 int getRxData()
 {
 
-//  if(softSerial.available() >= 21)
+//  if(Serial.available() >= 21)
 //  {
 //    for(int i = 0; i < 21; i++){
-//      rx_array[i] = softSerial.read();
+//      rx_array[i] = Serial.read();
 //    }
 //  }
 
-  while(softSerial.available())
+  while(Serial.available())
   {
-    if(softSerial.read() == 0x7E)
+    if(Serial.read() == 0x7E)
     {
       rx_array[0] = 0x7E;
       for(int i = 1; i < 21; i++)
-        rx_array[i] = softSerial.read();
+        rx_array[i] = Serial.read();
     }
   }
   
@@ -208,10 +208,10 @@ int getRxData()
     {
       for(int i = 0; i < 21; i++)
       {
-        Serial.print(rx_array[i],HEX);
-        Serial.print(", ");
+        softSerial.print(rx_array[i],HEX);
+        softSerial.print(", ");
       } 
-      Serial.println(); 
+      softSerial.println(); 
     }
     
     //determine source
@@ -396,10 +396,10 @@ void printRxArray()
 {
   for(int i = 0; i < 21; i++)
   {
-    Serial.print(rx_array[i],HEX);
-    Serial.print(", ");
+    softSerial.print(rx_array[i],HEX);
+    softSerial.print(", ");
   }
-  Serial.println();
+  softSerial.println();
 }
 
 
@@ -409,10 +409,10 @@ void printDataArray(uint8_t array[])
 {
    for(int i = 0; i < 5; i++)
    {
-     Serial.print(array[i]);
-     Serial.print(", ");
+     softSerial.print(array[i]);
+     softSerial.print(", ");
    }
-   Serial.println();
+   softSerial.println();
 }
 
 
